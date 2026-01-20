@@ -1,0 +1,27 @@
+[package]
+name = "tcs-bench"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Benchmarks for TCS vs BCS and other serialization formats"
+publish = false
+
+[dependencies]
+# Serialization formats to compare
+bcs.workspace = true
+serde.workspace = true
+wincode.workspace = true
+wincode-derive.workspace = true
+postcard.workspace = true
+
+# Benchmarking
+criterion.workspace = true
+rand.workspace = true
+rand_chacha = "0.3"
+
+[[bench]]
+name = "serialization"
+harness = false
+
+[lib]
+path = "src/lib.rs"

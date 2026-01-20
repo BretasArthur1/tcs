@@ -1,0 +1,34 @@
+[workspace]
+resolver = "2"
+members = ["tcs-schema", "tcs-compiler", "tcs-cli", "tcs-bench", "example"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "TCS (Tape Canonical Serialization) - A schema-based binary serialization format for Tapedrive"
+repository = "https://github.com/tapedrive/tcs"
+keywords = ["serialization", "binary", "canonical", "tapedrive", "blockchain"]
+
+[workspace.dependencies]
+# Local workspace members
+tcs-schema = { version = "0.1.0", path = "tcs-schema" }
+tcs-compiler = { version = "0.1.0", path = "tcs-compiler" }
+tcs-cli = { version = "0.1.0", path = "tcs-cli" }
+
+# Third-party crates
+lazy_static = "1.5.0"
+regex = "1.11.1"
+thiserror = "2.0.12"
+clap = { version = "4.5", features = ["derive"] }
+
+# Serialization libraries for benchmarking
+bcs = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+wincode = "0.2.5"
+wincode-derive = "0.2.3"
+postcard = { version = "1.0", features = ["alloc"] }
+
+# Benchmarking
+criterion = { version = "0.5", features = ["html_reports"] }
+rand = "0.8"

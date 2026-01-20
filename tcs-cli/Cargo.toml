@@ -1,0 +1,14 @@
+[package]
+name = "tcs-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Command-line interface for TCS (Tape Canonical Serialization)"
+
+[[bin]]
+name = "tcs"
+path = "src/main.rs"
+
+[dependencies]
+tcs-compiler.workspace = true
+clap.workspace = true

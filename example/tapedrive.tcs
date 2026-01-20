@@ -1,0 +1,68 @@
+// Tapedrive Schema
+// This schema defines the core data structures for the Tapedrive
+// decentralized storage network.
+
+package tapedrive;
+
+// Node roles in the network
+enum NodeRole {
+    STORAGE = 1;
+    VALIDATOR = 2;
+    LIGHT = 3;
+}
+
+// Status of a storage operation
+enum BlobStatus {
+    PENDING = 1;
+    STORED = 2;
+    VERIFIED = 3;
+    FAILED = 4;
+}
+
+// A cryptographic hash (32 bytes for SHA-256 or similar)
+struct Hash {
+    byte[32] data;
+}
+
+// Block header for the chain
+struct BlockHeader {
+    uint64 height;
+    byte[32] prevHash;
+    byte[32] merkleRoot;
+    byte[32] stateRoot;
+    uint64 timestamp;
+    uint64 epoch;
+}
+
+// A slice of data (1 of 1024 erasure-coded pieces)
+struct Slice {
+    uint sliceIndex;
+    byte[] data;
+    byte[32] hash;
+}
+
+// Metadata for a stored blob
+message BlobMetadata {
+    byte[32] blobId = 1;
+    uint64 size = 2;
+    uint64 timestamp = 3;
+    BlobStatus status = 4;
+    uint64 epoch = 5;
+}
+
+// A transaction in the network
+message Transaction {
+    byte[32] txHash = 1;
+    uint64 nonce = 2;
+    byte[] payload = 3;
+    byte[64] signature = 4;
+    NodeRole senderRole = 5;
+}
+
+// Spool sync request between nodes
+message SpoolSyncRequest {
+    uint spoolIndex = 1;
+    uint64 fromEpoch = 2;
+    uint64 toEpoch = 3;
+    byte[32] nodeId = 4;
+}
