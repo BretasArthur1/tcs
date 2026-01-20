@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["tcs-schema", "tcs-compiler", "tcs-cli", "tcs-bench", "example"]
+members = ["schema", "compiler", "cli", "bench", "example"]
 
 [workspace.package]
 version = "0.1.0"
@@ -12,9 +12,8 @@ keywords = ["serialization", "binary", "canonical", "tapedrive", "blockchain"]
 
 [workspace.dependencies]
 # Local workspace members
-tcs-schema = { version = "0.1.0", path = "tcs-schema" }
-tcs-compiler = { version = "0.1.0", path = "tcs-compiler" }
-tcs-cli = { version = "0.1.0", path = "tcs-cli" }
+tcs-schema = { version = "0.1.0", path = "schema" }
+tcs-compiler = { version = "0.1.0", path = "compiler" }
 
 # Third-party crates
 lazy_static = "1.5.0"
