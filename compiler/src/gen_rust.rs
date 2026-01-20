@@ -71,7 +71,7 @@ pub fn compile_schema_to_rust(schema: &Schema) -> String {
     }
 
     // Imports
-    rust_code.push("use wincode::{SchemaRead, SchemaWrite};".to_string());
+    rust_code.push("use wincode_derive::{SchemaRead, SchemaWrite};".to_string());
     rust_code.push("".to_string());
 
     // Generate code for each definition
@@ -183,7 +183,7 @@ fn generate_struct_impl(_definition: &Definition, struct_name: &str) -> String {
     // Deserialize method
     lines.push("    /// Deserialize from bytes".to_string());
     lines.push(format!(
-        "    pub fn from_bytes(bytes: &[u8]) -> Result<Self, wincode::Error> {{"
+        "    pub fn from_bytes(bytes: &[u8]) -> Result<Self, wincode::ReadError> {{"
     ));
     lines.push("        wincode::deserialize(bytes)".to_string());
     lines.push("    }".to_string());

@@ -782,6 +782,10 @@ dependencies = [
 [[package]]
 name = "tcs-example"
 version = "0.1.0"
+dependencies = [
+ "wincode",
+ "wincode-derive",
+]
 
 [[package]]
 name = "tcs-schema"

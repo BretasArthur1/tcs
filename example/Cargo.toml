@@ -6,5 +6,5 @@ license.workspace = true
 description = "Example usage of TCS (Tape Canonical Serialization)"
 
 [dependencies]
-# Generated code will need wincode
-# wincode = "x.y"
+wincode = { workspace = true }
+wincode-derive = { workspace = true }
