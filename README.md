@@ -26,24 +26,28 @@ Unlike Protocol Buffers, TCS is non-self-describing—the schema is not embedded
 Create a `schema.tcs` file:
 
 ```proto
-package myapp;
+package chain;
 
 enum Status {
-    PENDING = 1;
-    ACTIVE = 2;
-    COMPLETED = 3;
+    PENDING = 0;
+    CONFIRMED = 1;
+    FAILED = 2;
 }
 
-struct Header {
-    uint64 height;
-    byte[32] hash;
-    uint64 timestamp;
+// Structs have required fields (no Option in generated code)
+struct Transaction {
+    byte[32] sender;
+    byte[32] recipient;
+    uint64 amount;
+    byte[64] signature;
 }
 
-message Transaction {
-    byte[32] txHash = 1;
-    uint64 nonce = 2;
-    byte[] payload = 3;
+// Messages have optional fields (for schema evolution)
+message Block {
+    uint64 height = 1;
+    byte[32] parent = 2;
+    Transaction[] transactions = 3;
+    Status status = 4;
 }
 ```
 
@@ -56,19 +60,29 @@ tcs gen-rust --input schema.tcs --output generated.rs
 ### 3. Use Generated Types
 
 ```rust
-use myapp::{Header, Transaction, Status};
+use chain::{Block, Transaction, Status};
 
-// Serialize
-let header = Header {
-    height: 100,
-    hash: [0u8; 32],
-    timestamp: 1234567890,
+// Struct fields are required - no Option wrapper
+let transaction = Transaction {
+    sender: [1u8; 32],
+    recipient: [2u8; 32],
+    amount: 1000,
+    signature: [0u8; 64],
 };
-let bytes = wincode::serialize(&header).unwrap();
 
-// Deserialize
-let decoded: Header = wincode::deserialize(&bytes).unwrap();
+// Message fields are optional - wrapped in Option
+let block = Block {
+    height: Some(100),
+    parent: Some([0u8; 32]),
+    transactions: Some(vec![transaction]),
+    status: Some(Status::Confirmed),
+};
+
+let bytes = block.to_bytes();
+let decoded = Block::from_bytes(&bytes).unwrap();
 ```
+
+**Key difference from Protocol Buffers:** Struct fields are always required and generate direct types (`u64`, `Vec<T>`), not `Option<T>`. Use `message` when you need optional fields for backwards compatibility.
 
 ## Schema Syntax
 
