@@ -1,3 +1,6 @@
+[![crates.io](https://img.shields.io/crates/v/tcs-cli.svg?style=flat)](https://crates.io/crates/tcs-cli)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/license/mit/)
+
 # TCS
 (Tape Canonical Serialization)
 
@@ -54,6 +57,7 @@ message Block {
 ### 2. Generate Rust Code
 
 ```bash
+cargo install tcs-cli
 tcs gen-rust --input schema.tcs --output generated.rs
 ```
 
