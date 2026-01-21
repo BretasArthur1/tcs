@@ -3,7 +3,7 @@
 //! Commands:
 //! - gen-rust: Generate Rust code from a .tcs schema
 //! - validate: Validate a .tcs schema
-//! - format: Format a .tcs schema (placeholder)
+//! - format: Format a .tcs schema file
 
 use clap::{Parser, Subcommand};
 use std::fs;
@@ -38,13 +38,17 @@ enum Commands {
         input: PathBuf,
     },
 
-    /// Format a .tcs schema file (placeholder - not yet implemented)
+    /// Format a .tcs schema file
     Format {
         /// Input .tcs schema file
         #[arg(short, long)]
         input: PathBuf,
 
-        /// Check only, don't modify the file
+        /// Output file (defaults to overwriting input file)
+        #[arg(short, long)]
+        output: Option<PathBuf>,
+
+        /// Check if file is formatted (exit 1 if not)
         #[arg(long)]
         check: bool,
     },
@@ -56,7 +60,7 @@ fn main() {
     let result = match cli.command {
         Commands::GenRust { input, output } => gen_rust(input, output),
         Commands::Validate { input } => validate(input),
-        Commands::Format { input, check } => format_schema(input, check),
+        Commands::Format { input, output, check } => do_format(input, output, check),
     };
 
     if let Err(e) = result {
@@ -107,8 +111,27 @@ fn validate(input: PathBuf) -> Result<(), TcsError> {
     Ok(())
 }
 
-fn format_schema(input: PathBuf, check: bool) -> Result<(), TcsError> {
-    let _ = (input, check);
-    eprintln!("Warning: format command is not yet implemented");
-    Ok(())
+fn do_format(input: PathBuf, output: Option<PathBuf>, check: bool) -> Result<(), TcsError> {
+    let source = fs::read_to_string(&input)?;
+
+    let tokens = tcs_compiler::tokenize_schema(&source)?;
+    let schema = tcs_compiler::parse_schema(&tokens)?;
+    tcs_compiler::verify_schema(&schema)?;
+
+    let formatted = tcs_compiler::format_schema(&schema);
+
+    if check {
+        if source == formatted {
+            eprintln!("File is formatted: {}", input.display());
+            Ok(())
+        } else {
+            eprintln!("File needs formatting: {}", input.display());
+            std::process::exit(1);
+        }
+    } else {
+        let target = output.unwrap_or(input);
+        fs::write(&target, &formatted)?;
+        eprintln!("Formatted: {}", target.display());
+        Ok(())
+    }
 }

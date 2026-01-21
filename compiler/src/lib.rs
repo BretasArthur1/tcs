@@ -7,6 +7,7 @@
 //! - Rust code generation with wincode derives
 
 pub mod error;
+pub mod formatter;
 pub mod gen_rust;
 pub mod parser;
 pub mod tokenizer;
@@ -14,6 +15,7 @@ pub mod utils;
 pub mod verifier;
 
 pub use error::TcsError;
+pub use formatter::format_schema;
 pub use gen_rust::compile_schema_to_rust;
 pub use parser::parse_schema;
 pub use tokenizer::tokenize_schema;
