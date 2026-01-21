@@ -105,29 +105,29 @@ let decoded = Block::from_bytes(&bytes).unwrap();
 
 **Enums** - Fixed set of values with explicit discriminants:
 ```
-enum NodeRole {
-    STORAGE = 1;
-    VALIDATOR = 2;
-    LIGHT = 3;
+enum Role {
+    VALIDATOR = 1;
+    ARCHIVER = 2;
+    RELAYER = 3;
 }
 ```
 
 **Structs** - Fixed fields, all required:
 ```
-struct BlockHeader {
+struct Header {
     uint64 height;
-    byte[32] prevHash;
-    byte[32] merkleRoot;
+    byte[32] parent;
+    byte[32] root;
     uint64 timestamp;
 }
 ```
 
 **Messages** - Fields with IDs, all optional (for schema evolution):
 ```
-message Transaction {
-    byte[32] txHash = 1;
-    uint64 nonce = 2;
-    byte[] payload = 3;
+message Request {
+    byte[32] hash = 1;
+    uint64 sequence = 2;
+    byte[] data = 3;
 }
 ```
 
@@ -143,44 +143,17 @@ tcs validate --input schema.tcs
 
 ## Performance
 
-TCS significantly outperforms BCS (Binary Canonical Serialization) used in blockchain systems like Aptos and Sui.
+TCS is **20-60x faster** than BCS (Binary Canonical Serialization) used in Aptos and Sui.
 
-### Serialization Speed
+| Benchmark | BCS | TCS | Speedup |
+|-----------|-----|-----|---------|
+| Serialize 120B | 477 ns | 19 ns | 25x |
+| Serialize 4KB | 5.31 µs | 130 ns | 41x |
+| Deserialize 120B | 544 ns | 27 ns | 20x |
+| Deserialize 4KB | 16.4 µs | 264 ns | 62x |
+| Throughput (4KB) | 238-736 MiB/s | 14-29 GiB/s | 40x |
 
-| Data Type              | BCS       | TCS       | Speedup      |
-|------------------------|-----------|-----------|--------------|
-| BlockHeader (120B)     | 477 ns    | 19 ns     | **25x faster** |
-| Transaction (64B)      | 504 ns    | 32 ns     | **16x faster** |
-| Transaction (256B)     | 1.03 µs   | 42 ns     | **25x faster** |
-| Transaction (1KB)      | 1.89 µs   | 107 ns    | **18x faster** |
-| Transaction (4KB)      | 5.31 µs   | 130 ns    | **41x faster** |
-
-### Deserialization Speed
-
-| Data Type              | BCS       | TCS       | Speedup      |
-|------------------------|-----------|-----------|--------------|
-| BlockHeader (120B)     | 544 ns    | 27 ns     | **20x faster** |
-| Transaction (64B)      | 809 ns    | 49 ns     | **17x faster** |
-| Transaction (256B)     | 1.46 µs   | 63 ns     | **23x faster** |
-| Transaction (1KB)      | 4.63 µs   | 80 ns     | **58x faster** |
-| Transaction (4KB)      | 16.4 µs   | 264 ns    | **62x faster** |
-
-### Throughput
-
-| Operation              | BCS          | TCS           |
-|------------------------|--------------|---------------|
-| Serialize (4KB tx)     | 736 MiB/s    | 29.3 GiB/s    |
-| Deserialize (4KB tx)   | 238 MiB/s    | 14.4 GiB/s    |
-
-### Serialized Sizes
-
-| Data Type              | BCS         | TCS         | Postcard    |
-|------------------------|-------------|-------------|-------------|
-| BlockHeader            | 120 bytes   | 120 bytes   | 126 bytes   |
-| Transaction (256B)     | 363 bytes   | 372 bytes   | 365 bytes   |
-| 100 Transactions       | 36,317 bytes| 37,224 bytes| 36,470 bytes|
-
-TCS produces ~2-3% larger output due to fixed-width length prefixes, but this is offset by dramatically faster serialization.
+Output size is ~2-3% larger due to fixed-width length prefixes.
 
 ## TCS vs BCS Encoding
 
