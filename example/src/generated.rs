@@ -3,6 +3,7 @@
 
 pub mod example {
 
+    use wincode::io::Writer;
     use wincode_derive::{SchemaRead, SchemaWrite};
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, SchemaRead, SchemaWrite)]
@@ -26,7 +27,21 @@ pub mod example {
     impl Color {
         /// Serialize this value to bytes
         pub fn to_bytes(&self) -> Vec<u8> {
-            wincode::serialize(self).expect("serialization should not fail")
+            let mut out = Vec::new();
+            self.to_bytes_into(&mut out)
+                .expect("serialization should not fail");
+            out
+        }
+
+        /// Serialize this value into a buffer
+        pub fn to_bytes_into(&self, out: &mut Vec<u8>) -> Result<(), wincode::WriteError> {
+            out.clear();
+            let size = wincode::serialized_size(self)? as usize;
+            out.reserve(size);
+            let mut writer = unsafe { out.as_trusted_for(size)? };
+            wincode::serialize_into(&mut writer, self)?;
+            writer.finish()?;
+            Ok(())
         }
 
         /// Deserialize from bytes
@@ -45,7 +60,21 @@ pub mod example {
     impl Brush {
         /// Serialize this value to bytes
         pub fn to_bytes(&self) -> Vec<u8> {
-            wincode::serialize(self).expect("serialization should not fail")
+            let mut out = Vec::new();
+            self.to_bytes_into(&mut out)
+                .expect("serialization should not fail");
+            out
+        }
+
+        /// Serialize this value into a buffer
+        pub fn to_bytes_into(&self, out: &mut Vec<u8>) -> Result<(), wincode::WriteError> {
+            out.clear();
+            let size = wincode::serialized_size(self)? as usize;
+            out.reserve(size);
+            let mut writer = unsafe { out.as_trusted_for(size)? };
+            wincode::serialize_into(&mut writer, self)?;
+            writer.finish()?;
+            Ok(())
         }
 
         /// Deserialize from bytes
@@ -64,7 +93,21 @@ pub mod example {
     impl Layer {
         /// Serialize this value to bytes
         pub fn to_bytes(&self) -> Vec<u8> {
-            wincode::serialize(self).expect("serialization should not fail")
+            let mut out = Vec::new();
+            self.to_bytes_into(&mut out)
+                .expect("serialization should not fail");
+            out
+        }
+
+        /// Serialize this value into a buffer
+        pub fn to_bytes_into(&self, out: &mut Vec<u8>) -> Result<(), wincode::WriteError> {
+            out.clear();
+            let size = wincode::serialized_size(self)? as usize;
+            out.reserve(size);
+            let mut writer = unsafe { out.as_trusted_for(size)? };
+            wincode::serialize_into(&mut writer, self)?;
+            writer.finish()?;
+            Ok(())
         }
 
         /// Deserialize from bytes
@@ -84,7 +127,21 @@ pub mod example {
     impl Canvas {
         /// Serialize this value to bytes
         pub fn to_bytes(&self) -> Vec<u8> {
-            wincode::serialize(self).expect("serialization should not fail")
+            let mut out = Vec::new();
+            self.to_bytes_into(&mut out)
+                .expect("serialization should not fail");
+            out
+        }
+
+        /// Serialize this value into a buffer
+        pub fn to_bytes_into(&self, out: &mut Vec<u8>) -> Result<(), wincode::WriteError> {
+            out.clear();
+            let size = wincode::serialized_size(self)? as usize;
+            out.reserve(size);
+            let mut writer = unsafe { out.as_trusted_for(size)? };
+            wincode::serialize_into(&mut writer, self)?;
+            writer.finish()?;
+            Ok(())
         }
 
         /// Deserialize from bytes

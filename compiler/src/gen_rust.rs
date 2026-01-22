@@ -71,6 +71,7 @@ pub fn compile_schema_to_rust(schema: &Schema) -> String {
     }
 
     // Imports
+    rust_code.push("use wincode::io::Writer;".to_string());
     rust_code.push("use wincode_derive::{SchemaRead, SchemaWrite};".to_string());
     rust_code.push("".to_string());
 
@@ -104,7 +105,10 @@ fn generate_enum(definition: &Definition) -> String {
     let mut lines = Vec::new();
 
     // Derives and attributes
-    lines.push("#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, SchemaRead, SchemaWrite)]".to_string());
+    lines.push(
+        "#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, SchemaRead, SchemaWrite)]"
+            .to_string(),
+    );
     lines.push("#[repr(u32)]".to_string());
     lines.push(format!("pub enum {} {{", enum_name));
 
@@ -176,7 +180,24 @@ fn generate_struct_impl(_definition: &Definition, struct_name: &str) -> String {
     // Serialize method
     lines.push("    /// Serialize this value to bytes".to_string());
     lines.push("    pub fn to_bytes(&self) -> Vec<u8> {".to_string());
-    lines.push("        wincode::serialize(self).expect(\"serialization should not fail\")".to_string());
+    lines.push("        let mut out = Vec::new();".to_string());
+    lines.push("        self.to_bytes_into(&mut out)".to_string());
+    lines.push("            .expect(\"serialization should not fail\");".to_string());
+    lines.push("        out".to_string());
+    lines.push("    }".to_string());
+    lines.push("".to_string());
+    lines.push("    /// Serialize this value into a buffer".to_string());
+    lines.push(
+        "    pub fn to_bytes_into(&self, out: &mut Vec<u8>) -> Result<(), wincode::WriteError> {"
+            .to_string(),
+    );
+    lines.push("        out.clear();".to_string());
+    lines.push("        let size = wincode::serialized_size(self)? as usize;".to_string());
+    lines.push("        out.reserve(size);".to_string());
+    lines.push("        let mut writer = unsafe { out.as_trusted_for(size)? };".to_string());
+    lines.push("        wincode::serialize_into(&mut writer, self)?;".to_string());
+    lines.push("        writer.finish()?;".to_string());
+    lines.push("        Ok(())".to_string());
     lines.push("    }".to_string());
     lines.push("".to_string());
 
